@@ -15,12 +15,22 @@
     </header>
 	<main>
 		<canvas id = "board"></canvas>
-		<nav>
-			<h1>Themes</h1>
-			<button></button>
-			<button></button>
-			<button></button>
-		</nav>
+		<aside>
+			<button onclick="newGame()">Start Game</button>
+
+			<h2>Difficulty: <strong id="difficulty">Medium</strong></h2>
+			<button onclick="setDifficulty('Easy')">Easy</button>
+			<button onclick="setDifficulty('Medium')">Medium</button>
+			<button onclick="setDifficulty('Hard')">Hard</button>
+
+			<h2>Theme: <strong id="theme">Normal</strong></h2>
+			<button onclick="setTheme('Normal')">Normal</button>
+			<button onclick="setTheme('Minecraft')">Minecraft</button>
+			<button onclick="setTheme('Pirates')">Pirates</button>
+			<button onclick="setTheme('Crystals')">Crystals</button>
+
+
+		</aside>
 	</main>
 </body>
 
