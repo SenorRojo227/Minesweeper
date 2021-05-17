@@ -5,7 +5,7 @@ let canv, ctx;
 let w, h;
 
 //Board Properties
-let board = [[]];
+let board;
 
 //Load script on startup
 window.onload = function() {
@@ -20,23 +20,25 @@ function drawBoard() {
     for (let i = 0; i < board.length; i++) {
         for (let j = 0; j < board[0].length; j++) {
 
-            if (board[j][i].hidden) {
+            if (board[i][j].hidden) {
                 ctx.fillStyle = "gray";
             } else {
                 ctx.fillStyle = "white";
             }
 
-            ctx.fillRect(i * (w/board[0].length), j * (h/board.length), w/board[0].length, h/board.length);
-            ctx.strokeRect(i * (w/board[0].length), j * (h/board.length), w/board[0].length, h/board.length);
+            ctx.fillRect(j * (w/board[0].length), i * (h/board.length), w/board[0].length, h/board.length);
+            ctx.strokeRect(j * (w/board[0].length), i * (h/board.length), w/board[0].length, h/board.length);
 
-            if (!board[j][i].hidden) {
-                ctx.strokeText("" + board[j][i].value, i * (w/board[0].length) + (w/board[0].length/2), j * (h/board.length) + (h/board.length/2));
+            if (!board[i][j].hidden) {
+                ctx.strokeText("" + board[i][j].value, j * (w/board[0].length) + (w/board[0].length/2), i * (h/board.length) + (h/board.length/2));
             }
         }
     }
 }
 
 function newGame() {
+
+    board = [[]];
 
     //Board Dimensions
     let difficulty = document.getElementById("difficulty").innerHTML;
@@ -62,10 +64,10 @@ function newGame() {
     createEmptyBoard(xSquares, ySquares);
     drawBoard();
 
-    console.log("y Length: " + board.length + ", x Length: " + board[0].length);
+    printSize();
 
     //Bomb Initialization
-    let bombs = createBombs();
+    let bombs = createBombs(difficulty);
 
     //Create Board
     for (let i = 0; i < xSquares; i++) {
@@ -79,7 +81,7 @@ function newGame() {
         }
     }
 
-    //printBoard();
+    printBoard();
     
 }
 
@@ -97,11 +99,23 @@ function createEmptyBoard(xSquares, ySquares) {
 
 }
 
-function createBombs() {
+function createBombs(difficulty) {
 
     //Bomb Properties
     let bombs = [];
-    let numBombs = 16;
+    let numBombs;
+    
+    switch(difficulty) {
+        case "Easy":
+            numBombs = 5;
+            break;
+        case "Medium":
+            numBombs = 12;
+            break;
+        case "Hard":
+            numBombs = 20;
+            break;
+    }
 
     for (let i = 0; i < numBombs; i++) {
 
@@ -242,4 +256,8 @@ function printBoard() {
         }
         console.log("\n");
     }
+}
+
+function printSize() {
+    console.log("y Length: " + board.length + ", x Length: " + board[0].length);
 }
