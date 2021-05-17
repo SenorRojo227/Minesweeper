@@ -13,6 +13,7 @@ window.onload = function() {
 	ctx=canv.getContext("2d");
     setDifficulty("Medium");
 	canv.addEventListener('click', mouseClick);
+    canv.addEventListener('contextmenu', rightClick, false);
 }
 
 //Draw the Board
@@ -29,9 +30,18 @@ function drawBoard() {
             ctx.fillRect(j * (w/board[0].length), i * (h/board.length), w/board[0].length, h/board.length);
             ctx.strokeRect(j * (w/board[0].length), i * (h/board.length), w/board[0].length, h/board.length);
 
+            //Draw Revealed Squares
             if (!board[i][j].hidden) {
                 ctx.strokeText("" + board[i][j].value, j * (w/board[0].length) + (w/board[0].length/2), i * (h/board.length) + (h/board.length/2));
             }
+
+            //Draw Flags
+            if (board[i][j].flag) {
+                const flag = new Image(w/board[0].length, h/board.length);
+                flag.src = "resources/Flag.png";
+                ctx.drawImage(flag, j * (w/board[0].length), i * (h/board.length), flag.width, flag.height);
+            }
+
         }
     }
 }
@@ -64,7 +74,7 @@ function newGame() {
     createEmptyBoard(xSquares, ySquares);
     drawBoard();
 
-    printSize();
+    //printSize();
 
     //Bomb Initialization
     let bombs = createBombs(difficulty);
@@ -81,7 +91,7 @@ function newGame() {
         }
     }
 
-    printBoard();
+    //printBoard();
     
 }
 
@@ -92,7 +102,8 @@ function createEmptyBoard(xSquares, ySquares) {
         for (let j = 0; j < xSquares; j++) {
             board[i][j] = {
                 value: 0,
-                hidden: true
+                hidden: true,
+                flag: false
             };
         }
     }
@@ -218,6 +229,25 @@ function mouseClick(e) {
     
 }
 
+function rightClick(e) {
+
+    e.preventDefault();
+    
+    x = e.clientX - 50;
+    y = e.clientY - 70;
+
+    xSquare = Math.floor(x / (w/board[0].length));
+    ySquare = Math.floor(y / (h/board.length));
+
+    if (board[ySquare][xSquare].hidden) {
+        board[ySquare][xSquare].flag = !board[ySquare][xSquare].flag;
+    }
+
+    drawBoard();
+
+    return false;
+}
+
 function setDifficulty(difficulty) {
     document.getElementById("difficulty").innerHTML = difficulty;
 	canv=document.getElementById("board");
@@ -245,6 +275,16 @@ function setDifficulty(difficulty) {
 
     w = canv.width;
     h = canv.height;
+}
+
+function setTheme(theme) {
+    
+    switch(theme) {
+        case "Twilight":
+            canv.style.backgroundImage = "url(resources/Twilight-Background.jpg)";
+            break;
+    }
+
 }
 
 /*Debugging Functions*/
