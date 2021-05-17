@@ -24,7 +24,7 @@ function drawBoard() {
             if (board[i][j].hidden) {
                 ctx.fillStyle = "gray";
             } else {
-                ctx.fillStyle = "white";
+                ctx.fillStyle = getSquareColor(board[i][j].value);
             }
 
             ctx.fillRect(j * (w/board[0].length), i * (h/board.length), w/board[0].length, h/board.length);
@@ -32,7 +32,13 @@ function drawBoard() {
 
             //Draw Revealed Squares
             if (!board[i][j].hidden) {
-                ctx.strokeText("" + board[i][j].value, j * (w/board[0].length) + (w/board[0].length/2), i * (h/board.length) + (h/board.length/2));
+                if (board[i][j].value == 9) {
+                    const bomb = new Image(w/board[0].length, h/board.length);
+                    bomb.src = "resources/Bomb.png";
+                    ctx.drawImage(bomb, j * (w/board[0].length), i * (h/board.length), bomb.width, bomb.height);
+                } else {
+                    ctx.strokeText("" + board[i][j].value, j * (w/board[0].length) + (w/board[0].length/2), i * (h/board.length) + (h/board.length/2));
+                }
             }
 
             //Draw Flags
@@ -208,6 +214,7 @@ function showSquare(x, y) {
         for (let i = 0; i < board[0].length; i++) {
             for (let j = 0; j < board.length; j++) {
                 board[j][i].hidden = false;
+                board[j][i].flag = false;
             }
         }
     }
@@ -216,11 +223,48 @@ function showSquare(x, y) {
 
 }
 
+function getSquareColor(value) {
+
+    switch(value) {
+        case 0:
+            return "#FFF";
+            break;
+        case 1:
+            return "#FDD";
+            break;
+        case 2:
+            return "#FBB";
+            break;
+        case 3:
+            return "#F99";
+            break;
+        case 4:
+            return "#F88";
+            break;
+        case 5:
+            return "#F77";
+            break;
+        case 6:
+            return "#F66";
+            break;
+        case 7:
+            return "#F55";
+            break;
+        case 8:
+            return "#F44";
+            break;
+        
+    }
+
+    return "#FFF";
+
+}
+
 /*On-Click Functions*/
 
 function mouseClick(e) {
     x = e.clientX - 50;
-    y = e.clientY - 70;
+    y = e.clientY - 84;
 
     xSquare = Math.floor(x / (w/board[0].length));
     ySquare = Math.floor(y / (h/board.length));
@@ -234,7 +278,7 @@ function rightClick(e) {
     e.preventDefault();
     
     x = e.clientX - 50;
-    y = e.clientY - 70;
+    y = e.clientY - 84;
 
     xSquare = Math.floor(x / (w/board[0].length));
     ySquare = Math.floor(y / (h/board.length));
@@ -281,7 +325,7 @@ function setTheme(theme) {
     
     switch(theme) {
         case "Twilight":
-            canv.style.backgroundImage = "url(resources/Twilight-Background.jpg)";
+            //canv.style.backgroundImage = "url(resources/Twilight-Background.jpg)";
             break;
     }
 
