@@ -3,17 +3,37 @@ let canv, ctx;
 
 //Canvas Dimensions
 let w, h;
+const squareSize = 40;
 
 //Board Properties
-let board;
+let board, difficulty, theme;
+
+//Resources
+let flag, bomb, forks, vampires = [];
 
 //Load script on startup
 window.onload = function() {
 	canv=document.getElementById("board");
 	ctx=canv.getContext("2d");
     setDifficulty("Medium");
+    initImages();
 	canv.addEventListener('click', mouseClick);
     canv.addEventListener('contextmenu', rightClick, false);
+}
+
+function initImages() {
+
+    //Initialize Images
+    bomb = new Image(squareSize, squareSize);
+    flag = new Image(squareSize, squareSize);
+    for (let i = 0; i < 1; i++) {
+        vampires[i] = new Image(squareSize, squareSize);
+    }
+
+    //Add Sources
+    bomb.src = "resources/Bomb.png";
+    flag.src = "resources/Flag.png";
+    vampires[0].src = "resources/twilight/Carlisle.png";
 }
 
 //Draw the Board
@@ -22,7 +42,11 @@ function drawBoard() {
         for (let j = 0; j < board[0].length; j++) {
 
             if (board[i][j].hidden) {
-                ctx.fillStyle = "gray";
+                if (theme == "Twilight") {
+                    ctx.fillStyle = "#FF0000";
+                } else {
+                    ctx.fillStyle = "gray";
+                }
             } else {
                 ctx.fillStyle = getSquareColor(board[i][j].value);
             }
@@ -33,8 +57,6 @@ function drawBoard() {
             //Draw Revealed Squares
             if (!board[i][j].hidden) {
                 if (board[i][j].value == 9) {
-                    const bomb = new Image(w/board[0].length, h/board.length);
-                    bomb.src = "resources/Bomb.png";
                     ctx.drawImage(bomb, j * (w/board[0].length), i * (h/board.length), bomb.width, bomb.height);
                 } else {
                     ctx.strokeText("" + board[i][j].value, j * (w/board[0].length) + (w/board[0].length/2), i * (h/board.length) + (h/board.length/2));
@@ -43,9 +65,11 @@ function drawBoard() {
 
             //Draw Flags
             if (board[i][j].flag) {
-                const flag = new Image(w/board[0].length, h/board.length);
-                flag.src = "resources/Flag.png";
-                ctx.drawImage(flag, j * (w/board[0].length), i * (h/board.length), flag.width, flag.height);
+                if (theme == "Twilight") {
+                    ctx.drawImage(vampires[0], j * (w/board[0].length), i * (h/board.length), flag.width, flag.height);
+                } else {
+                    ctx.drawImage(flag, j * (w/board[0].length), i * (h/board.length), flag.width, flag.height);
+                }
             }
 
         }
@@ -57,7 +81,8 @@ function newGame() {
     board = [[]];
 
     //Board Dimensions
-    let difficulty = document.getElementById("difficulty").innerHTML;
+    difficulty = document.getElementById("difficulty").innerHTML;
+    theme = document.getElementById("theme").innerHTML;
     let xSquares;
     let ySquares;
 
@@ -78,12 +103,12 @@ function newGame() {
 
     //Board Initialization
     createEmptyBoard(xSquares, ySquares);
-    drawBoard();
+    drawBoard(theme);
 
     //printSize();
 
     //Bomb Initialization
-    let bombs = createBombs(difficulty);
+    let bombs = createBombs();
 
     //Create Board
     for (let i = 0; i < xSquares; i++) {
@@ -116,7 +141,7 @@ function createEmptyBoard(xSquares, ySquares) {
 
 }
 
-function createBombs(difficulty) {
+function createBombs() {
 
     //Bomb Properties
     let bombs = [];
@@ -190,6 +215,7 @@ function showSquare(x, y) {
     if (board[y][x].value != 9) {
 
         board[y][x].hidden = false;
+        board[y][x].flag = false;
         if (board[y][x].value == 0) {
             
             //Loop Through Adjacent Spaces
@@ -285,6 +311,7 @@ function rightClick(e) {
 
     if (board[ySquare][xSquare].hidden) {
         board[ySquare][xSquare].flag = !board[ySquare][xSquare].flag;
+        console.log("Alert!");
     }
 
     drawBoard();
@@ -292,9 +319,10 @@ function rightClick(e) {
     return false;
 }
 
-function setDifficulty(difficulty) {
-    document.getElementById("difficulty").innerHTML = difficulty;
-	canv=document.getElementById("board");
+function setDifficulty(d) {
+
+    document.getElementById("difficulty").innerHTML = d;
+    difficulty = d;
 
     switch(difficulty) {
         case "Easy":
@@ -321,11 +349,16 @@ function setDifficulty(difficulty) {
     h = canv.height;
 }
 
-function setTheme(theme) {
+function setTheme(t) {
+    
+    document.getElementById("theme").innerHTML = t;
+    theme = t;
     
     switch(theme) {
+        case "Normal":
+            canv.style.backgroundImage = "none";
         case "Twilight":
-            //canv.style.backgroundImage = "url(resources/Twilight-Background.jpg)";
+            canv.style.backgroundImage = "url(resources/twilight/Forks-Background.jpg)";
             break;
     }
 
